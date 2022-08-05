@@ -5,3 +5,4 @@
 [submodule "vendor/faiss"]
 	path = vendor/faiss
 	url = https://github.com/facebookresearch/faiss.git
+	branch = main
