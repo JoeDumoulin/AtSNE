@@ -1,8 +1,8 @@
 #pragma once
 #include <iostream>
 
-#include "vendor/faiss/gpu/GpuIndexFlat.h"
-#include "vendor/faiss/gpu/GpuIndexIVF.h"
+#include "vendor/faiss/faiss/gpu/GpuIndexFlat.h"
+#include "vendor/faiss/faiss/gpu/GpuIndexIVF.h"
 
 #include "testing.hpp"
 
@@ -112,8 +112,8 @@ void calc_gauss_perplexity_and_build_graph_gpu(const float *points, unsigned poi
     HANDLE_ERROR(cudaMalloc((void **)&W_device, batch_size * (K_point + K_center) * sizeof(float)));
 
     // use our patch
-    const faiss::gpu::qvis_patch::GpuIndexFlat *center_index_ =
-        (faiss::gpu::qvis_patch::GpuIndexFlat *)center_index; // qvis patch
+ //   const faiss::gpu::qvis_patch::GpuIndexFlat *center_index_ =
+ //       (faiss::gpu::qvis_patch::GpuIndexFlat *)center_index; // qvis patch
 
     for (unsigned batch = 0; batch < points_num; batch += batch_size) { // loop for batch
         int this_batch_size = std::min(points_num, batch + batch_size) - batch;
@@ -131,7 +131,8 @@ void calc_gauss_perplexity_and_build_graph_gpu(const float *points, unsigned poi
 
         // build center graph
         if (K_center > 0) {
-            center_index_->search_int_labels(this_batch_size, points + batch * dim, K_center, center_distances,
+//            center_index_->search_int_labels(this_batch_size, points + batch * dim, K_center, center_distances,
+            center_index->search(this_batch_size, points + batch * dim, K_center, center_distances,
                                              center_indicates);
         }
         HANDLE_ERROR(cudaDeviceSynchronize()); // FIXME: I don't know why we should wait there, but if not, we may get
@@ -337,8 +338,8 @@ void calc_gauss_perplexity_and_build_graph(const float *points, unsigned points_
     HANDLE_ERROR(cudaMallocHost((void **)&center_distances, batch_size * K_center * sizeof(float)));
 
     // use our patch
-    const faiss::gpu::qvis_patch::GpuIndexFlat *center_index_ =
-        (faiss::gpu::qvis_patch::GpuIndexFlat *)center_index; // qvis patch
+//    const faiss::gpu::qvis_patch::GpuIndexFlat *center_index_ =
+//        (faiss::gpu::qvis_patch::GpuIndexFlat *)center_index; // qvis patch
 
     for (unsigned batch = 0; batch < points_num; batch += batch_size) { // loop for batch
         int this_batch_size = std::min(points_num, batch + batch_size) - batch;
@@ -352,7 +353,8 @@ void calc_gauss_perplexity_and_build_graph(const float *points, unsigned points_
 
         // build center graph
         if (K_center > 0) {
-            center_index_->search_int_labels(this_batch_size, points + batch * dim, K_center, center_distances,
+//            center_index_->search_int_labels(this_batch_size, points + batch * dim, K_center, center_distances,
+            center_index->search(this_batch_size, points + batch * dim, K_center, center_distances,
                                              center_indicates);
             HANDLE_ERROR(cudaDeviceSynchronize()); // FIXME: I don't know why we should wait there, but if not, we may
                                                    // get some zero in result

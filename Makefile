@@ -3,8 +3,9 @@ CXX = g++
 CPPFLAGS = -march=native -fopenmp -Wall
 
 NVCCFLAGS = -std=c++11 -lcurand -lcublas -lopenblas \
-	-Lvendor/faiss/gpu \
-	-Lvendor/faiss \
+    -Ivendor/faiss \
+	-Lvendor/faiss/faiss/gpu \
+	-Lvendor/faiss/faiss \
 	-l:libfaiss.a \
 	-l:libgpufaiss.a \
 	-DQVIS_GPU \
@@ -12,6 +13,7 @@ NVCCFLAGS = -std=c++11 -lcurand -lcublas -lopenblas \
     -gencode arch=compute_35,code="compute_35" \
     -gencode arch=compute_52,code="compute_52" \
     -gencode arch=compute_60,code="compute_60" \
+    -gencode arch=compute_86,code="compute_86" \
     -Xcompiler "$(CPPFLAGS)"
 
 all = qvis_gpu test_knn_accuracy test_top1_error

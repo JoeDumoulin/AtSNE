@@ -85,7 +85,7 @@ template <typename ElementType> struct MatrixPitched {
         }
         cudaPointerAttributes att;
         HANDLE_ERROR(cudaPointerGetAttributes(&att, matrix.data()));
-        assert(att.memoryType == cudaMemoryTypeHost ||
+        assert(att.type == cudaMemoryTypeHost ||
                isManaged(att)); // it has been deprecated in favour of cudaPointerAttributes::type.
 
         *this = matrix;

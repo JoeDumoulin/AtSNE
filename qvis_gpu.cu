@@ -12,16 +12,16 @@
 #include <omp.h>
 
 // faiss
-#include "vendor/faiss/IndexIVFFlat.h"
-#include "vendor/faiss/IndexIVFPQ.h"
-#include "vendor/faiss/gpu/GpuIndexFlat.h"
-#include "vendor/faiss/gpu/GpuIndexIVF.h"
-#include "vendor/faiss/gpu/GpuIndexIVFFlat.h"
-#include "vendor/faiss/gpu/GpuIndexIVFPQ.h"
-#include "vendor/faiss/gpu/StandardGpuResources.h"
-#include "vendor/faiss/gpu/impl/FlatIndex.cuh"
-#include "vendor/faiss/gpu/utils/CopyUtils.cuh"
-#include "vendor/faiss/index_io.h"
+#include "vendor/faiss/faiss/IndexIVFFlat.h"
+#include "vendor/faiss/faiss/IndexIVFPQ.h"
+#include "vendor/faiss/faiss/gpu/GpuIndexFlat.h"
+#include "vendor/faiss/faiss/gpu/GpuIndexIVF.h"
+#include "vendor/faiss/faiss/gpu/GpuIndexIVFFlat.h"
+#include "vendor/faiss/faiss/gpu/GpuIndexIVFPQ.h"
+#include "vendor/faiss/faiss/gpu/StandardGpuResources.h"
+#include "vendor/faiss/faiss/gpu/impl/FlatIndex.cuh"
+#include "vendor/faiss/faiss/gpu/utils/CopyUtils.cuh"
+#include "vendor/faiss/faiss/index_io.h"
 
 // cmdline
 #include "vendor/cmdline/cmdline.h"
@@ -30,7 +30,7 @@
 #include "gradient.cuh"
 #include "graph.hpp"
 #include "handle_cuda_err.hpp"
-#include "qvis_faiss_patch.cuh"
+//#include "qvis_faiss_patch.cuh"
 #include "qvis_io.h"
 #include "testing.hpp"
 #include "tsne.cuh"
@@ -85,11 +85,12 @@ void build_cn_graph(const faiss::gpu::GpuIndexFlat *index, const float *data, in
     int          batch_size   = batch_memory / sizeof(int) / k;
     int *        indicates;
 
-    const faiss::gpu::qvis_patch::GpuIndexFlat *index_ = (faiss::gpu::qvis_patch::GpuIndexFlat *)index; // qvis patch
+//    const faiss::gpu::qvis_patch::GpuIndexFlat *index_ = (faiss::gpu::qvis_patch::GpuIndexFlat *)index; // qvis patch
     HANDLE_ERROR(cudaMallocHost((void **)&indicates, batch_size * k * sizeof(int)));
     for (int batch = 0; batch < points_num; batch += batch_size) {
         int this_batch_size = std::min(points_num, batch + batch_size) - batch;
-        index_->search_int_labels(this_batch_size, data + batch * data_stride, k, nullptr, indicates);
+//        index_->search_int_labels(this_batch_size, data + batch * data_stride, k, nullptr, indicates);
+        index->search_int_labels(this_batch_size, data + batch * data_stride, k, nullptr, indicates);
         HANDLE_ERROR(cudaDeviceSynchronize()); // FIXME: I don't know why we should wait there, but if not, we may get
                                                // some zero in result
 
