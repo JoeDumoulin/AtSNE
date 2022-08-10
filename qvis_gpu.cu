@@ -83,14 +83,14 @@ void build_cn_graph(const faiss::gpu::GpuIndexFlat *index, const float *data, in
     }
     const size_t batch_memory = 1 << 30; // 1GB
     int          batch_size   = batch_memory / sizeof(int) / k;
-    int *        indicates;
+    faiss::Index::idx_t*        indicates;
 
 //    const faiss::gpu::qvis_patch::GpuIndexFlat *index_ = (faiss::gpu::qvis_patch::GpuIndexFlat *)index; // qvis patch
     HANDLE_ERROR(cudaMallocHost((void **)&indicates, batch_size * k * sizeof(int)));
     for (int batch = 0; batch < points_num; batch += batch_size) {
         int this_batch_size = std::min(points_num, batch + batch_size) - batch;
 //        index_->search_int_labels(this_batch_size, data + batch * data_stride, k, nullptr, indicates);
-        index->search_int_labels(this_batch_size, data + batch * data_stride, k, nullptr, indicates);
+        index->search(this_batch_size, data + batch * data_stride, k, nullptr, indicates);
         HANDLE_ERROR(cudaDeviceSynchronize()); // FIXME: I don't know why we should wait there, but if not, we may get
                                                // some zero in result
 
@@ -109,7 +109,7 @@ void build_cn_graph_long(const faiss::gpu::GpuIndexFlat *index, const float *dat
                          int k, qvis::Graph<unsigned, true> &cgraph) {
     const size_t batch_memory = 1 << 30; // 1GB
     int          batch_size   = batch_memory / sizeof(int) / k;
-    long *       indicates;
+    faiss::Index::idx_t*       indicates;
     float *      distances;
     HANDLE_ERROR(cudaMallocHost((void **)&indicates, batch_size * k * sizeof(long)));
     HANDLE_ERROR(cudaMallocHost((void **)&distances, batch_size * k * sizeof(float)));
@@ -652,8 +652,9 @@ int main(int argc, char **argv) {
 
     // search point belong to which cluster
     last_timepoint = qvis::test::now();
-    ((faiss::gpu::qvis_patch::GpuIndexFlat *)coarse_quantizer)
-        ->search_int_labels(points_num, data, 1, nullptr, (int *)gradC.cluster);
+//    ((faiss::gpu::qvis_patch::GpuIndexFlat *)coarse_quantizer)
+//        ->search_int_labels(points_num, data, 1, nullptr, (int *)gradC.cluster);
+    coarse_quantizer->search(points_num, data, 1, nullptr, reinterpret_cast<faiss::Index::idx_t *>(gradC.cluster));
     HANDLE_ERROR(cudaDeviceSynchronize());
 
     printf("%s %7.4lf ms\n", "searching for cluster centers",

@@ -91,6 +91,7 @@ void calc_gauss_perplexity_and_build_graph_gpu(const float *points, unsigned poi
     long * point_indicates; // FIXME: we perfer int
 
     float *center_distances;
+    //int *  center_indicates;
     int *  center_indicates;
 
     float *distances_host, *distances_device;
@@ -133,7 +134,7 @@ void calc_gauss_perplexity_and_build_graph_gpu(const float *points, unsigned poi
         if (K_center > 0) {
 //            center_index_->search_int_labels(this_batch_size, points + batch * dim, K_center, center_distances,
             center_index->search(this_batch_size, points + batch * dim, K_center, center_distances,
-                                             center_indicates);
+                                             (faiss::Index::idx_t *)center_indicates);
         }
         HANDLE_ERROR(cudaDeviceSynchronize()); // FIXME: I don't know why we should wait there, but if not, we may get
                                                // some zero in result
@@ -355,7 +356,7 @@ void calc_gauss_perplexity_and_build_graph(const float *points, unsigned points_
         if (K_center > 0) {
 //            center_index_->search_int_labels(this_batch_size, points + batch * dim, K_center, center_distances,
             center_index->search(this_batch_size, points + batch * dim, K_center, center_distances,
-                                             center_indicates);
+                                             (faiss::Index::idx_t *)center_indicates);
             HANDLE_ERROR(cudaDeviceSynchronize()); // FIXME: I don't know why we should wait there, but if not, we may
                                                    // get some zero in result
         }

@@ -4,10 +4,9 @@ CPPFLAGS = -march=native -fopenmp -Wall
 
 NVCCFLAGS = -std=c++11 -lcurand -lcublas -lopenblas \
     -Ivendor/faiss \
-	-Lvendor/faiss/faiss/gpu \
-	-Lvendor/faiss/faiss \
+    -Ivendor/faiss/faiss/gpu \
+	-Lvendor/faiss/build/faiss \
 	-l:libfaiss.a \
-	-l:libgpufaiss.a \
 	-DQVIS_GPU \
 	-ccbin $(CXX) \
     -gencode arch=compute_35,code="compute_35" \

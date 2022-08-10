@@ -4,9 +4,9 @@
 #include <iostream>
 
 // faiss
-#include "vendor/faiss/IndexFlat.h"
-#include "vendor/faiss/gpu/GpuIndexFlat.h"
-#include "vendor/faiss/gpu/StandardGpuResources.h"
+#include "vendor/faiss/faiss/IndexFlat.h"
+#include "vendor/faiss/faiss/gpu/GpuIndexFlat.h"
+#include "vendor/faiss/faiss/gpu/StandardGpuResources.h"
 // cmdline
 #include "vendor/cmdline/cmdline.h"
 

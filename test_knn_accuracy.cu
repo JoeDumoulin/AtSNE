@@ -6,8 +6,8 @@
 #include <string>
 #include <utility>
 // faiss
-#include "vendor/faiss/gpu/GpuIndexFlat.h"
-#include "vendor/faiss/gpu/StandardGpuResources.h"
+#include "vendor/faiss/faiss/gpu/GpuIndexFlat.h"
+#include "vendor/faiss/faiss/gpu/StandardGpuResources.h"
 // cmdline
 #include "vendor/cmdline/cmdline.h"
 // qvis
